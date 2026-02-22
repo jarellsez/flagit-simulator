@@ -19,6 +19,7 @@ import AdminSettings from './pages/admin/AdminSettings';
 import ModelManagement from './pages/maintainer/ModelManagement';
 import DatasetManagement from './pages/maintainer/DatasetManagement';
 import SampleGenerator from './pages/maintainer/SampleGenerator';
+import DetectorContainer from "./phishingDetector/components/DetectorContainer";
 
 // A wrapper to handle the root route logic since we need access to the store
 const RootRedirect = () => {
