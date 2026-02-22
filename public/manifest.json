@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "FlagIt - Phishing Detector",
+  "version": "0.1.0",
+  "description": "FlagIt phishing detection popup UI",
+  "action": {
+    "default_title": "FlagIt",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": []
+}

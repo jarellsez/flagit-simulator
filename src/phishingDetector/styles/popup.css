@@ -1,0 +1,14 @@
+/* Hard-size the Chrome extension popup */
+html, body {
+  width: 420px;
+  height: 600px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #071a33; /* match your dark theme */
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
