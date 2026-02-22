@@ -8,6 +8,7 @@ const Login = () => {
     const [email, setEmail] = useState('Flagit@gmail.com');
     const [password, setPassword] = useState('Pilon123');
     const [showPassword, setShowPassword] = useState(false);
+    const [selectedRole, setSelectedRole] = useState('user');
     const [errors, setErrors] = useState({});
 
     const validate = () => {
@@ -35,8 +36,16 @@ const Login = () => {
             setErrors(validationErrors);
             return;
         }
-        login();
-        navigate('/dashboard');
+
+        login(selectedRole);
+
+        if (selectedRole === 'admin') {
+            navigate('/admin');
+        } else if (selectedRole === 'aiMaintainer') {
+            navigate('/maintainer/models');
+        } else {
+            navigate('/dashboard');
+        }
     };
 
     return (
@@ -58,6 +67,13 @@ const Login = () => {
 
                 <h1 style={{ fontSize: '1.75rem', fontWeight: 'bold', marginBottom: '0.5rem', letterSpacing: '0.1em' }}>FLAGIT</h1>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Login</h2>
+
+                {selectedRole !== 'user' && (
+                    <div style={{ display: 'inline-block', backgroundColor: '#fef3c7', color: '#d97706', padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                        {selectedRole === 'admin' ? 'Logging in as Admin' : 'Maintainer Login'}
+                    </div>
+                )}
+
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.875rem' }}>Enter your email and password below</p>
 
                 <form onSubmit={handleLogin} style={{ textAlign: 'left' }}>
@@ -111,8 +127,9 @@ const Login = () => {
                 </form>
 
                 <div className="flex justify-between mt-6 text-sm">
-                    <button type="button" className="btn-text" style={{ color: 'var(--accent-orange)' }}>Login as Admin</button>
-                    <button type="button" className="btn-text" style={{ color: 'var(--accent-orange)' }}>Login as AI Maintainer</button>
+                    {selectedRole !== 'admin' && <button type="button" onClick={() => setSelectedRole('admin')} className="btn-text" style={{ color: 'var(--accent-orange)' }}>Login as Admin</button>}
+                    {selectedRole !== 'aiMaintainer' && <button type="button" onClick={() => setSelectedRole('aiMaintainer')} className="btn-text" style={{ color: 'var(--accent-orange)' }}>Login as AI Maintainer</button>}
+                    {selectedRole !== 'user' && <button type="button" onClick={() => setSelectedRole('user')} className="btn-text" style={{ color: 'var(--primary-teal)' }}>Login as User</button>}
                 </div>
 
                 <div className="mt-6 text-sm text-muted" style={{ color: 'var(--text-muted)' }}>

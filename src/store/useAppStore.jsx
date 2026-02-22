@@ -1,54 +1,93 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { INITIAL_MODULES, INITIAL_SIMULATIONS, MOCK_USER } from '../data/seed';
+import { INITIAL_MODULES, INITIAL_SIMULATIONS, MOCK_USER, ADMIN_STATS, MOCK_USERS, ACTIVE_CAMPAIGNS, PAST_CAMPAIGNS, REPORT_TRENDS, AI_MODELS, AI_DATASETS } from '../data/seed';
 
 const AppStateContext = createContext(null);
+
+const safeLoad = (key, fallback) => {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+    } catch (e) {
+        console.warn(`Error parsing localStorage key "${key}":`, e);
+        return fallback;
+    }
+};
 
 export const AppStateProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() => {
         return localStorage.getItem('flagit_loggedIn') === 'true';
     });
 
-    const [user, setUser] = useState(MOCK_USER);
-
-    const [stats, setStats] = useState(() => {
-        const saved = localStorage.getItem('flagit_stats');
-        return saved ? JSON.parse(saved) : MOCK_USER.stats;
+    const [role, setRole] = useState(() => {
+        const savedRole = localStorage.getItem('flagit_role');
+        const validRoles = ['user', 'admin', 'aiMaintainer'];
+        return validRoles.includes(savedRole) ? savedRole : 'user';
     });
+
+    const [user, setUser] = useState(() => safeLoad('flagit_user', MOCK_USER));
+    const [stats, setStats] = useState(() => safeLoad('flagit_stats', MOCK_USER.stats));
 
     const [resilienceScore, setResilienceScore] = useState(() => {
-        const saved = localStorage.getItem('flagit_score');
-        return saved ? parseInt(saved, 10) : MOCK_USER.resilienceScore;
+        try {
+            const saved = localStorage.getItem('flagit_score');
+            return saved !== null && !isNaN(parseInt(saved, 10)) ? parseInt(saved, 10) : MOCK_USER.resilienceScore;
+        } catch {
+            return MOCK_USER.resilienceScore;
+        }
     });
 
-    const [modules, setModules] = useState(() => {
-        const saved = localStorage.getItem('flagit_modules');
-        return saved ? JSON.parse(saved) : INITIAL_MODULES;
-    });
+    const [modules, setModules] = useState(() => safeLoad('flagit_modules', INITIAL_MODULES));
+    const [simulations, setSimulations] = useState(() => safeLoad('flagit_simulations', INITIAL_SIMULATIONS));
+    const [resultsHistory, setResultsHistory] = useState(() => safeLoad('flagit_history', []));
 
-    const [simulations, setSimulations] = useState(() => {
-        const saved = localStorage.getItem('flagit_simulations');
-        return saved ? JSON.parse(saved) : INITIAL_SIMULATIONS;
-    });
+    // Admin States
+    const [adminUsers, setAdminUsers] = useState(() => safeLoad('flagit_adminUsers', MOCK_USERS));
+    const [adminActiveCampaigns, setAdminActiveCampaigns] = useState(() => safeLoad('flagit_adminActiveCampaigns', ACTIVE_CAMPAIGNS));
 
-    const [resultsHistory, setResultsHistory] = useState(() => {
-        const saved = localStorage.getItem('flagit_history');
-        return saved ? JSON.parse(saved) : [];
-    });
+    // Static seeded states for reports
+    const adminStats = ADMIN_STATS;
+    const adminPastCampaigns = PAST_CAMPAIGNS;
+    const reportTrends = REPORT_TRENDS;
+
+    // AI Maintainer States
+    const [aiModels, setAiModels] = useState(() => safeLoad('flagit_aiModels', AI_MODELS));
+    const [aiDatasets, setAiDatasets] = useState(() => safeLoad('flagit_aiDatasets', AI_DATASETS));
+    const [aiSamples, setAiSamples] = useState(() => safeLoad('flagit_aiSamples', []));
 
     // Sync to localStorage
     useEffect(() => {
         localStorage.setItem('flagit_loggedIn', isLoggedIn);
+        localStorage.setItem('flagit_role', role);
+        localStorage.setItem('flagit_user', JSON.stringify(user));
         localStorage.setItem('flagit_stats', JSON.stringify(stats));
         localStorage.setItem('flagit_score', resilienceScore.toString());
         localStorage.setItem('flagit_modules', JSON.stringify(modules));
         localStorage.setItem('flagit_simulations', JSON.stringify(simulations));
         localStorage.setItem('flagit_history', JSON.stringify(resultsHistory));
-    }, [isLoggedIn, stats, resilienceScore, modules, simulations, resultsHistory]);
+        localStorage.setItem('flagit_adminUsers', JSON.stringify(adminUsers));
+        localStorage.setItem('flagit_adminActiveCampaigns', JSON.stringify(adminActiveCampaigns));
+        localStorage.setItem('flagit_aiModels', JSON.stringify(aiModels));
+        localStorage.setItem('flagit_aiDatasets', JSON.stringify(aiDatasets));
+        localStorage.setItem('flagit_aiSamples', JSON.stringify(aiSamples));
+    }, [isLoggedIn, role, user, stats, resilienceScore, modules, simulations, resultsHistory, adminUsers, adminActiveCampaigns, aiModels, aiDatasets, aiSamples]);
 
-    const login = () => setIsLoggedIn(true);
+    const login = (selectedRole = 'user') => {
+        setIsLoggedIn(true);
+        setRole(selectedRole);
+
+        if (selectedRole === 'admin') {
+            setUser({ name: 'Sarah Mitchell', email: 'sarah.mitchell@admin.com', roleLabel: 'System Administrator' });
+        } else if (selectedRole === 'aiMaintainer') {
+            setUser({ name: 'AI Maintainer', email: 'ai@maintainer.com', roleLabel: 'Model Management' });
+        } else {
+            setUser(MOCK_USER);
+        }
+    };
+
     const logout = () => {
         setIsLoggedIn(false);
-        // Requirements: "clear login state (optionally preserve progress history)."
+        setRole('user');
+        setUser(MOCK_USER);
     };
 
     const reportSimulation = (simId, choice) => {
@@ -79,10 +118,16 @@ export const AppStateProvider = ({ children }) => {
 
     return (
         <AppStateContext.Provider value={{
-            isLoggedIn, login, logout,
-            user, stats, resilienceScore,
+            isLoggedIn, role, user, login, logout,
+            stats, resilienceScore,
             modules, simulations, resultsHistory,
-            reportSimulation, getLastResult
+            reportSimulation, getLastResult,
+            adminUsers, setAdminUsers,
+            adminActiveCampaigns, setAdminActiveCampaigns,
+            adminStats, adminPastCampaigns, reportTrends,
+            aiModels, setAiModels,
+            aiDatasets, setAiDatasets,
+            aiSamples, setAiSamples
         }}>
             {children}
         </AppStateContext.Provider>
