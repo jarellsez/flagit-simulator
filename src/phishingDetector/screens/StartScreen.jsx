@@ -49,22 +49,22 @@ export default function StartScreen({ setScreen }) {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="actions">
-          <button 
-            className="btn-primary"
-            onClick={() => setScreen("scanning")}
-          >
-            Start Scanning
-          </button>
-          
-          <button 
-            className="btn-secondary"
-            onClick={() => window.open('http://localhost:5173', '_blank')}
-          >
-            Go to Website
-          </button>
-        </div>
+{/* Action Buttons */}
+<div className="actions">
+  <button 
+    className="btn-primary"
+    onClick={() => setScreen("scanning")}
+  >
+    View Scanner Status  {/* ← NEW TEXT */}
+  </button>
+  
+  <button 
+    className="btn-secondary"
+    onClick={() => window.open('http://localhost:5173', '_blank')}
+  >
+    Go to Website
+  </button>
+</div>
       </div>
     </div>
   );
