@@ -1,28 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StartScreen from "../screens/StartScreen";
-import PermissionsScreen from "../screens/PermissionsScreen";
 import ScanningScreen from "../screens/ScanningScreen";
-import AnalysisScreen from "../screens/AnalysisScreen";
-import ReportSuccessScreen from "../screens/ReportSuccessScreen";
 
-export default function DetectorContainer() {
-
+export default function DetectorContainer({ onScreenChange }) {
   const [screen, setScreen] = useState("start");
 
-  const renderScreen = () => {
-    switch (screen) {
-      case "permissions":
-        return <PermissionsScreen setScreen={setScreen} />;
+  // Log when screen changes
+  useEffect(() => {
+    console.log("📱 Screen changed to:", screen);
+    if (onScreenChange) {
+      onScreenChange(screen);
+    }
+  }, [screen, onScreenChange]);
 
+  useEffect(() => {
+    console.log("🔍 DetectorContainer mounted");
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get(['popupReason'], (result) => {
+        console.log("📦 Storage result:", result);
+        if (result.popupReason === 'email_open') {
+          console.log("🎯 Setting screen to scanning");
+          setScreen("scanning");
+          chrome.storage.local.remove('popupReason');
+        }
+      });
+    }
+  }, []);
+
+  const renderScreen = () => {
+    console.log("🖥️ Rendering screen:", screen);
+    switch (screen) {
       case "scanning":
         return <ScanningScreen setScreen={setScreen} />;
-
-      case "analysis":
-        return <AnalysisScreen setScreen={setScreen} />;
-
-      case "reported":
-        return <ReportSuccessScreen setScreen={setScreen} />;
-
       default:
         return <StartScreen setScreen={setScreen} />;
     }
@@ -34,4 +43,3 @@ export default function DetectorContainer() {
     </div>
   );
 }
-<DetectorContainer />

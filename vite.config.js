@@ -8,12 +8,10 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        // Website entry
         main: resolve(__dirname, 'index.html'),
-        // Extension popup entry
         popup: resolve(__dirname, 'popup.html'),
-        // Content script (this was missing!)
-        content: resolve(__dirname, 'src/content/content.js')
+        content: resolve(__dirname, 'src/content/content.js'),
+        background: resolve(__dirname, 'src/background/background.js')
       },
       output: {
         entryFileNames: '[name].js',

@@ -1,17 +1,16 @@
 .start-screen {
-  padding: 16px 20px 12px 20px;
+  padding: 16px 20px 24px 20px; /* Increased bottom padding from 12px to 24px */
   color: white;
   background-color: #0a1a2f;
-  min-height: 500px;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto; /* Allow scrolling if needed */
 }
 
-/* HEADER - LEFT ALIGNED */
 .header {
   margin-bottom: 5px;
   position: relative;
@@ -44,12 +43,11 @@
   height: 95px;
   object-fit: contain;
   display: block;
-  transform: translate(0, 10px); /* ADJUST THIS VALUE */
+  transform: translate(0, 12px); /* ADJUST THIS VALUE */
   /* Positive Y = move down */
   /* Negative Y = move up */
 }
 
-/* Text next to logo */
 .logo-text {
   text-align: left;
 }
@@ -70,7 +68,6 @@
   font-weight: 500;
 }
 
-/* MAIN CONTENT - CENTERED */
 .main-content {
   flex: 1;
   display: flex;
@@ -99,9 +96,6 @@
   margin-bottom: 12px;
   position: relative;
   z-index: 2;
-}
-
-.radar-icon svg {
   color: #F97316;
 }
 
@@ -234,7 +228,6 @@
   color: #F97316;
 }
 
-/* Background decorations */
 .start-screen::before {
   content: '';
   position: absolute;
