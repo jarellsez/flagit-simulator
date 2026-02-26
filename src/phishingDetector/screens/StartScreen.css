@@ -43,9 +43,7 @@
   height: 95px;
   object-fit: contain;
   display: block;
-  transform: translate(0, 12px); /* ADJUST THIS VALUE */
-  /* Positive Y = move down */
-  /* Negative Y = move up */
+  transform: translate(0, 12px); 
 }
 
 .logo-text {

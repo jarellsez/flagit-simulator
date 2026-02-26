@@ -1,24 +1,25 @@
 // src/background/background.js
 console.log("🚀 FlagIt: Background script loaded");
 
-// Listen for messages from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("📨 Background received:", request);
   
   if (request.type === "EMAIL_OPENED") {
-    console.log(`📧 Email opened: "${request.subject}"`);
+    console.log(`📧 Email opened: "${request.subject}" with ID: ${request.emailId}`);
     
-    // Store that this popup should show scanning screen
+    // Store email info INCLUDING the email ID and reset scanning state
     chrome.storage.local.set({ 
       popupReason: 'email_open',
       platform: request.platform,
       subject: request.subject,
+      emailId: request.emailId,
+      currentEmailId: request.emailId,
+      scanningState: 'scanning', // ← ADD THIS - Reset to scanning for new email
       timestamp: Date.now()
     }, () => {
-      console.log("✅ Storage set complete");
+      console.log("✅ Storage set complete. Email ID:", request.emailId, "State: scanning");
     });
     
-    // Try to open popup and log result
     console.log("🔍 Attempting to open popup...");
     
     try {
