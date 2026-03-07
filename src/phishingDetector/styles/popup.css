@@ -1,11 +1,11 @@
-/* Hard-size the Chrome extension popup */
+/* src/styles/popup.css */
 html, body {
-  width: 420px;
-  height: 600px;
+  width: 360px; /* Shrunk from 420px */
+  height: 460px; /* Shrunk from 600px */
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #071a33; /* match your dark theme */
+  background: #0a1a2f; 
 }
 
 #root {
