@@ -1,11 +1,10 @@
 .platform-list-screen {
-  padding: 16px 20px 24px 20px; /* <-- The 24px here is the magic padding that lifts the button! */
+  padding: 24px 20px 24px 20px; 
   color: white;
   background-color: #0a1a2f;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh; 
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
@@ -29,10 +28,10 @@
 }
 
 .logo-box {
-  width: 95px;
-  height: 95px;
+  width: 70px; 
+  height: 70px;
   background: #1a2f45;
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,10 +39,14 @@
 }
 
 .logo-box img {
-  width: 75px;
-  height: 75px;
+  width: 55px;
+  height: 55px;
   object-fit: contain;
+  object-position: center; 
   display: block;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  transform: translateY(5.5px);
 }
 
 .logo-text {
@@ -52,7 +55,7 @@
 
 .logo-text h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 24px; 
   font-weight: 700;
   color: white;
   line-height: 1.2;
@@ -75,11 +78,11 @@
   position: relative;
   z-index: 2;
   padding: 0 10px;
-  margin-top: 25px; /* Reduced to lift the shield and text higher */
+  margin-top: 10px; 
 }
 
 .shield-container {
-  margin: 0 0 5px 0; /* Keeps the bottom edge close to the icons */
+  margin: 0 0 5px 0; 
   position: relative;
   width: 100%;
   display: flex;
@@ -92,27 +95,29 @@
   font-size: 20px;
   font-weight: 700;
   margin: 0 auto 5px auto;
-  color: #22D3EE; /* Brighter Cyan */
+  color: #22D3EE; 
   letter-spacing: 1.5px;
-  /* Keep your other existing properties here */
 }
 
 .shield-icon {
-  font-size: 80px;
-  margin-bottom: 16px;
+  font-size: 65px; 
+  margin-bottom: 8px; 
   color: #F97316;
-  filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.3));
-}
-
-.shield-icon {
-  font-size: 80px;
-  margin-bottom: 16px;
-  color: #F97316;
-  /* Apply the smooth glowing animation */
   animation: shieldGlow 2s infinite ease-in-out; 
+  cursor: pointer; 
+  transition: transform 0.2s ease;
 }
 
-/* Custom animation for the forcefield glow */
+.shield-icon:hover {
+  transform: scale(1.05); 
+}
+
+.shield-icon.power-off {
+  color: #475569; 
+  animation: none; 
+  filter: none; 
+}
+
 @keyframes shieldGlow {
   0% {
     filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.3));
@@ -120,7 +125,7 @@
   }
   50% {
     filter: drop-shadow(0 0 35px rgba(249, 115, 22, 0.9));
-    transform: scale(1.05); /* Slight heartbeat expansion */
+    transform: scale(1.05); 
   }
   100% {
     filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.3));
@@ -130,49 +135,51 @@
 
 .status-text {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7); /* Soft white instead of dark teal */
-  /* Keep your other existing properties here */
+  color: rgba(255, 255, 255, 0.7); 
+
 }
 
 .feature-icons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   width: 100%;
-  margin: 10px 0 20px 0; /* 10px top pulls icons to text, 20px bottom pulls button up */
+  margin: 15px 0 15px 0; 
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px; 
   background: rgba(255, 255, 255, 0.03);
-  padding: 12px 4px; /* Reduced side padding */
-  border-radius: 12px;
+  padding: 8px 4px; 
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  flex: 1; /* <-- MAGIC LINE: Forces all badges to share the row equally! */
-  max-width: 80px; /* Stops the Telegram badge from getting massive when alone */
+  flex: 1; 
+  max-width: 75px; 
 }
 
 .feature-item svg {
-  font-size: 24px; 
+  font-size: 18px; 
   color: #F97316;
 }
 
 .feature-item span {
-  font-size: 11px; 
+  font-size: 10px; 
   color: rgba(255, 255, 255, 0.7);
   font-weight: 400;
   text-align: center;
+  line-height: 1.1;
 }
 
 .actions {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
+  margin-top: auto; 
+  position: relative;
+  z-index: 10;
 }
 
 .btn-secondary {
@@ -199,7 +206,6 @@
   transform: scale(0.98);
 }
 
-/* Background decorations */
 .platform-list-screen::before {
   content: '';
   position: absolute;

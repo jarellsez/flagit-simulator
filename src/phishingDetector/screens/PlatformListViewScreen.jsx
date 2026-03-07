@@ -1,37 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faShieldHalved, faEnvelope, faStar, faFlag, 
-  faPaperPlane, faFileAlt, faBan, faComments, faCommentDots, faUsers 
+  faShieldHalved, faEnvelope, faStar, faFlag, faArchive, 
+  faComments, faCommentDots, faUsers 
 } from '@fortawesome/free-solid-svg-icons';
-import './PlatformListViewScreen.css'; // Don't forget to rename your CSS file too!
+import './PlatformListViewScreen.css';
 
 export default function PlatformListViewScreen({ setScreen, platform }) {
+  const [isScanning, setIsScanning] = useState(true);
+
+  // 1. Check current scanner state for THIS SPECIFIC PLATFORM
+  useEffect(() => {
+    if (chrome.storage) {
+      chrome.storage.local.get(['scannerStates'], (data) => {
+        const states = data.scannerStates || {};
+        if (states[platform] === 'OFF') {
+          setIsScanning(false);
+        }
+      });
+    }
+  }, [platform]);
+
+  // 2. The Power Button Toggle (Now includes 'platform' in the payload)
+  const toggleScanner = () => {
+    const newState = isScanning ? 'OFF' : 'ON';
+    setIsScanning(!isScanning);
+    if (chrome.runtime?.id) {
+      chrome.runtime.sendMessage({ 
+        type: "SET_SCANNER_STATE", 
+        platform: platform, 
+        state: newState 
+      });
+    }
+  };
   
-  // Dynamic config based on the detected platform
   const getPlatformFeatures = () => {
     switch(platform) {
-      case 'telegram':
-        return [{ icon: faComments, label: 'Chats' }];
-      case 'teams':
-        return [
-          { icon: faCommentDots, label: 'Chat' },
-          { icon: faUsers, label: 'Teams' }
-        ];
-      case 'outlook':
-        return [
-          { icon: faEnvelope, label: 'Inbox' },
-          { icon: faPaperPlane, label: 'Sent Items' },
-          { icon: faFileAlt, label: 'Drafts' },
-          { icon: faBan, label: 'Junk Email' }
+      case 'telegram': return [{ icon: faComments, label: 'Chats' }];
+      case 'teams': return [{ icon: faCommentDots, label: 'Chat' }, { icon: faUsers, label: 'Teams' }];
+      case 'outlook': return [
+          { icon: faEnvelope, label: 'Inbox' }, { icon: faStar, label: 'Important' },
+          { icon: faArchive, label: 'Archive' }, { icon: faFlag, label: 'Junk Email' }
         ];
       case 'gmail':
-      default:
-        return [
-          { icon: faEnvelope, label: 'Inbox' },
-          { icon: faStar, label: 'Starred' },
-          { icon: faPaperPlane, label: 'Sent' },
-          { icon: faFlag, label: 'Spam' }
+      default: return [
+          { icon: faEnvelope, label: 'Inbox' }, { icon: faStar, label: 'Starred' },
+          { icon: faArchive, label: 'All folders' }, { icon: faFlag, label: 'Spam' }
         ];
     }
   };
@@ -55,15 +69,23 @@ export default function PlatformListViewScreen({ setScreen, platform }) {
 
       <div className="main-content">
         <div className="shield-container">
-          <div className="shield-icon">
-            <FontAwesomeIcon icon={faShieldHalved} style={{ color: "#F97316" }} />
+          <div 
+            className={`shield-icon ${!isScanning ? 'power-off' : ''}`}
+            onClick={toggleScanner}
+            title={isScanning ? "Click to turn OFF" : "Click to turn ON"}
+          >
+            <FontAwesomeIcon icon={faShieldHalved} />
           </div>
-          <h2>ARMED & READY</h2>
-          <p className="status-text">To detect phishes in your {targetText}</p>
+          
+          <h2 style={{ color: isScanning ? "#22D3EE" : "#64748b" }}>
+            {isScanning ? "ARMED & READY" : "SCANNER PAUSED"}
+          </h2>
+          <p className="status-text" style={{ color: isScanning ? "rgba(255, 255, 255, 0.7)" : "#ef4444" }}>
+            {isScanning ? `To detect phishes in your ${targetText}` : "Protection is disabled for this site."}
+          </p>
         </div>
 
-        {/* Dynamically mapped icons */}
-        <div className="feature-icons">
+        <div className="feature-icons" style={{ opacity: isScanning ? 1 : 0.4, pointerEvents: isScanning ? 'auto' : 'none' }}>
           {features.map((item, index) => (
             <div className="feature-item" key={index}>
               <FontAwesomeIcon icon={item.icon} />
@@ -71,12 +93,12 @@ export default function PlatformListViewScreen({ setScreen, platform }) {
             </div>
           ))}
         </div>
+      </div> 
 
-        <div className="actions">
-          <button className="btn-secondary" onClick={() => window.open('http://localhost:5173', '_blank')}>
-            Go to Website
-          </button>
-        </div>
+      <div className="actions">
+        <button className="btn-secondary" onClick={() => window.open('http://localhost:5173', '_blank')}>
+          Go to Website
+        </button>
       </div>
     </div>
   );

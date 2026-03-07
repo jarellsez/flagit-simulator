@@ -33,14 +33,15 @@ export default function PopupApp() {
   const getPopupSize = () => {
     switch (currentScreen) {
       case "scanning":
-        return { width: "380px", height: "70px" }; 
       case "paused":
-        return { width: "440px", height: "70px" }; 
+        return { width: "360px", height: "70px" }; 
+      case "threat":
+        return { width: "360px", height: "600px" }; 
+      case "safe":                                  /* <-- Grouped back with the standard screens */
       case "platformList":
-        return { width: "400px", height: "540px" }; 
       case "start":
       default:
-        return { width: "400px", height: "540px" }; 
+        return { width: "360px", height: "460px" }; /* <-- Consistent 460px height */
     }
   };
 
