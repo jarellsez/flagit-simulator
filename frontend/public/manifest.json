@@ -15,9 +15,12 @@
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "tabs",
+    "offscreen"
   ],
   "host_permissions": [
+    "http://127.0.0.1:8000/*",
     "*://*.google.com/*",
     "*://*.telegram.org/*",
     "*://*.microsoft.com/*",
@@ -40,6 +43,21 @@
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "models/*",
+        "libs/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   }
 }

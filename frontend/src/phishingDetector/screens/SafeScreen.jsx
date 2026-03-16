@@ -1,33 +1,39 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import React, { useEffect } from 'react';
 import './SafeScreen.css';
 
-export default function SafeScreen() {
-  return (
-    <div className="safe-screen">
-      <div className="header">
-        <div className="logo-container">
-          <div className="logo-box safe-box">
-            <img src="/icons/flagit-logo.png" alt="FlagIt" />
-          </div>
-          <div className="logo-text">
-            <h1>FlagIt</h1>
-            <p className="text-green">Security Scan Complete</p>
-          </div>
-        </div>
-      </div>
+export default function SafeScreen({ setScreen }) {
 
-      <div className="main-content">
-        <div className="safe-container">
-          <div className="safe-icon">
-            <FontAwesomeIcon icon={faCircleCheck} />
+  // Auto close popup after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (typeof chrome !== "undefined" && chrome.storage) {
+        chrome.storage.local.remove(["popupReason"]);
+      }
+      window.close();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="safe-screen-compact">
+      <div className="safe-content-compact">
+
+        {/* Left Side: Success Icon */}
+        <div className="safe-icon-area">
+          <div className="check-circle">
+            <span className="check-mark">✓</span>
           </div>
-          <h2>NO THREATS DETECTED</h2>
-          <p className="status-text">
-            This message appears safe. No phishing indicators were found during the scan.
-          </p>
         </div>
+
+        {/* Center: Status Text */}
+        <div className="safe-text-area">
+          <h2>NO THREATS FOUND</h2>
+        </div>
+
+        {/* Right Side Placeholder: Maintains symmetry with ScanningScreen */}
+        <div style={{ width: '36px' }}></div>
+
       </div>
     </div>
   );

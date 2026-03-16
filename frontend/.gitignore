@@ -1,26 +1,45 @@
-# Logs
-logs
-*.log
+# --- Node / Frontend / Backend ---
+node_modules/
+dist/
+dist-ssr/
+*.local
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# --- Python / AI (Jeremy's stuff) ---
+venv/
+.venv/
+env/
+# Specific path for the detector venv
+src/phishingDetector/venv/
+src/phishingDetector/flagit_v8_deployment/venv/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Environment & Security ---
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- Editor / OS ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# --- Large AI Files (Optional) ---
+# If your ONNX models are huge, you might want to ignore them 
+# and handle via LFS, but for now, keep them tracked if they are small.

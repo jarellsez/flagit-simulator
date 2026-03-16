@@ -5,55 +5,56 @@ import "./styles/popup.css";
 export default function PopupApp() {
   const [currentScreen, setCurrentScreen] = useState("start");
 
-  // Force body to resize with popup and strip default margins
-  useEffect(() => {
-    const size = getPopupSize();
-    console.log(`📏 Resizing to: ${size.width} x ${size.height} for screen: ${currentScreen}`);
-    
-    // 1. Wipe out default Chrome margins and hide scrollbars
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.margin = "0";
-    document.documentElement.style.padding = "0";
-    document.documentElement.style.overflow = "hidden";
-
-    // 2. Set strict sizes
-    document.body.style.width = size.width;
-    document.body.style.height = size.height;
-    document.documentElement.style.width = size.width;
-    document.documentElement.style.height = size.height;
-  }, [currentScreen]);
-
-  const handleScreenChange = (screen) => {
-    console.log("📢 PopupApp received screen change:", screen);
-    setCurrentScreen(screen);
-  };
-
   const getPopupSize = () => {
     switch (currentScreen) {
       case "scanning":
       case "paused":
-        return { width: "360px", height: "70px" }; 
+      case "safe": // 👈 Moved this here to match scanning size
+        return { width: "360px", height: "70px" };
+
       case "threat":
-        return { width: "360px", height: "600px" }; 
-      case "safe":                                  /* <-- Grouped back with the standard screens */
+        return { width: "360px", height: "600px" };
+
       case "platformList":
       case "start":
       default:
-        return { width: "360px", height: "460px" }; /* <-- Consistent 460px height */
+        return { width: "360px", height: "460px" };
     }
   };
 
   const size = getPopupSize();
 
+  useEffect(() => {
+    // Apply dynamic dimensions to the browser's actual popup window
+    document.documentElement.style.width = size.width;
+    document.documentElement.style.height = size.height;
+    document.body.style.width = size.width;
+    document.body.style.height = size.height;
+
+    // Standard resets
+    document.documentElement.style.margin = "0";
+    document.documentElement.style.padding = "0";
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }, [size]);
+
+  const handleScreenChange = (screen) => {
+    console.log("📢 PopupApp screen change:", screen);
+    setCurrentScreen(screen);
+  };
+
   return (
-    <div style={{ 
-      width: "100%",
-      height: "100%",
+    <div style={{
+      width: size.width,
+      height: size.height,
       backgroundColor: "#0a1a2f",
-      overflow: "hidden",      // <-- Stops content from spilling out
-      boxSizing: "border-box"  // <-- Prevents internal padding from breaking the height
+      overflow: "hidden",
+      boxSizing: "border-box",
+      display: "flex",
+      flexDirection: "column",
+      transition: "height 0.2s ease-in-out" // Added a tiny smooth transition
     }}>
       <DetectorContainer onScreenChange={handleScreenChange} />
     </div>

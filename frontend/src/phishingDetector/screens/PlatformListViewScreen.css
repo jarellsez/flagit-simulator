@@ -1,10 +1,10 @@
 .platform-list-screen {
-  padding: 24px 20px 24px 20px; 
+  padding: 16px 20px;
   color: white;
   background-color: #0a1a2f;
   display: flex;
   flex-direction: column;
-  height: 100vh; 
+  height: 100vh;
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
@@ -28,7 +28,7 @@
 }
 
 .logo-box {
-  width: 70px; 
+  width: 70px;
   height: 70px;
   background: #1a2f45;
   border-radius: 12px;
@@ -42,7 +42,7 @@
   width: 55px;
   height: 55px;
   object-fit: contain;
-  object-position: center; 
+  object-position: center;
   display: block;
   margin: 0 auto !important;
   padding: 0 !important;
@@ -55,7 +55,7 @@
 
 .logo-text h1 {
   margin: 0;
-  font-size: 24px; 
+  font-size: 24px;
   font-weight: 700;
   color: white;
   line-height: 1.2;
@@ -64,7 +64,7 @@
 .logo-text p {
   margin: 4px 0 0;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6); 
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 400;
 }
 
@@ -78,11 +78,11 @@
   position: relative;
   z-index: 2;
   padding: 0 10px;
-  margin-top: 10px; 
+  margin-top: 10px;
 }
 
 .shield-container {
-  margin: 0 0 5px 0; 
+  margin: 0 0 5px 0;
   position: relative;
   width: 100%;
   display: flex;
@@ -95,27 +95,27 @@
   font-size: 20px;
   font-weight: 700;
   margin: 0 auto 5px auto;
-  color: #22D3EE; 
+  color: #22D3EE;
   letter-spacing: 1.5px;
 }
 
 .shield-icon {
-  font-size: 65px; 
-  margin-bottom: 8px; 
+  font-size: 65px;
+  margin-bottom: 8px;
   color: #F97316;
-  animation: shieldGlow 2s infinite ease-in-out; 
-  cursor: pointer; 
+  animation: shieldGlow 2s infinite ease-in-out;
+  cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .shield-icon:hover {
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 .shield-icon.power-off {
-  color: #475569; 
-  animation: none; 
-  filter: none; 
+  color: #475569;
+  animation: none;
+  filter: none;
 }
 
 @keyframes shieldGlow {
@@ -123,10 +123,12 @@
     filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.3));
     transform: scale(1);
   }
+
   50% {
     filter: drop-shadow(0 0 35px rgba(249, 115, 22, 0.9));
-    transform: scale(1.05); 
+    transform: scale(1.05);
   }
+
   100% {
     filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.3));
     transform: scale(1);
@@ -135,7 +137,7 @@
 
 .status-text {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7); 
+  color: rgba(255, 255, 255, 0.7);
 
 }
 
@@ -144,29 +146,29 @@
   gap: 8px;
   justify-content: center;
   width: 100%;
-  margin: 15px 0 15px 0; 
+  margin: 10px 0;
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px; 
+  gap: 6px;
   background: rgba(255, 255, 255, 0.03);
-  padding: 8px 4px; 
+  padding: 8px 4px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  flex: 1; 
-  max-width: 75px; 
+  flex: 1;
+  max-width: 75px;
 }
 
 .feature-item svg {
-  font-size: 18px; 
+  font-size: 18px;
   color: #F97316;
 }
 
 .feature-item span {
-  font-size: 10px; 
+  font-size: 10px;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 400;
   text-align: center;
@@ -177,7 +179,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: auto; 
+  margin-top: auto;
   position: relative;
   z-index: 10;
 }
@@ -186,9 +188,9 @@
   background: transparent;
   color: white;
   border: 1px solid #F97316;
-  padding: 14px 24px;
+  padding: 10px 24px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;

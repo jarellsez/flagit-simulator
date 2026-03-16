@@ -1,26 +1,28 @@
+/* src/screens/ScanningScreen.css */
 .scanning-screen-compact {
   width: 100%;
-  height: 70px; /* Fixed height */
+  height: 70px;
+  /* Fixed height for consistency */
   background-color: #0a1a2f;
   color: white;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   box-sizing: border-box;
   display: flex;
-  align-items: center; /* Vertically centers everything */
+  align-items: center;
   justify-content: center;
 }
 
 .scanning-content-compact {
   display: flex;
-  align-items: center; /* Vertically centers all items */
+  align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   gap: 16px;
   width: 100%;
-  height: 100%; /* Take full height */
+  height: 100%;
 }
 
-/* Left: Radar Animation */
+/* --- RADAR ANIMATION --- */
 .radar-compact {
   position: relative;
   width: 36px;
@@ -29,7 +31,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0; /* Remove any margins */
+  margin: 0;
 }
 
 .radar-circle-compact {
@@ -68,10 +70,12 @@
     transform: scale(0.8);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.1);
     opacity: 0.4;
   }
+
   100% {
     transform: scale(0.8);
     opacity: 0.8;
@@ -82,20 +86,20 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-/* Middle: Text */
+/* --- TEXT AREA --- */
 .text-compact {
   flex: 1;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%; /* Take full height */
-  line-height: 1; /* Remove extra line height */
+  height: 100%;
 }
 
 .text-compact h2 {
@@ -103,39 +107,12 @@
   font-weight: 700;
   margin: 0;
   padding: 0;
-  color: #016B80;
-  letter-spacing: 0.5px;
+  /* Updated to Cyan to pop against the dark background */
+  color: #22D3EE;
+  letter-spacing: 1px;
   white-space: nowrap;
-  line-height: 1; /* Remove extra line height */
-}
-
-/* Right: Pause Button */
-.pause-button-compact {
-  background: transparent;
-  color: white;
-  border: 1px solid #F97316;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 28px; /* Fixed height */
   line-height: 1;
-  margin: 0; /* Remove any margins */
 }
 
-.pause-button-compact:hover {
-  background: rgba(249, 115, 22, 0.1);
-  transform: scale(1.02);
-}
-
-.pause-button-compact:active {
-  transform: scale(0.98);
-}
+/* Note: All .pause-button-compact styles have been removed 
+   to keep the code clean and focused on the animation. */
