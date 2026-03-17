@@ -60,7 +60,7 @@ exports.getAll = async (req, res, next) => {
 
     // Simulations are filtered by status for the admin view
     const activeRaw = simulations.filter(
-      (s) => s.status === 'Active' || s.status === 'Paused'
+      (s) => s.status === 'Active' || s.status === 'Paused' || s.status === 'Scheduled'
     );
     const pendingRaw = simulations.filter((s) => s.status === 'Pending');
     const pastRaw = simulations.filter((s) => s.status === 'Completed');
@@ -91,12 +91,26 @@ exports.create = async (req, res, next) => {
 
     const resolvedCategory = category || (scenarioType === 'Normal Awareness' ? 'Normal' : 'Phishing');
 
+    // ── Visibility Controller: derive scheduledAt and auto-set status ──
+    const scheduledAt = schedule ? new Date(schedule) : null;
+    const now = new Date();
+    let resolvedStatus = status || 'Pending';
+
+    if (scheduledAt) {
+      if (scheduledAt > now) {
+        resolvedStatus = 'Scheduled';  // future → scheduled
+      } else if (['Pending', 'Scheduled'].includes(resolvedStatus)) {
+        resolvedStatus = 'Active';     // now or past → active
+      }
+    }
+
     const simulation = await Simulation.create({
       title: title || name,
       description: description || `Targeted ${resolvedCategory.toLowerCase()} simulation for ${targetGroup || 'All Employees'}.`,
       targetGroup: targetGroup || 'All Employees',
-      schedule: schedule || null,
-      status: status || 'Pending',
+      schedule: scheduledAt,
+      scheduledAt,
+      status: resolvedStatus,
       category: resolvedCategory,
       isPhishing: resolvedCategory === 'Phishing',
       difficulty: difficulty || 'Intermediate',
@@ -135,7 +149,7 @@ exports.getById = async (req, res, next) => {
 // @route   PUT /api/admin/simulations/:id
 exports.update = async (req, res, next) => {
   try {
-    const { name, title, scenarioType, category, ...rest } = req.body;
+    const { name, title, scenarioType, category, schedule, ...rest } = req.body;
     
     const updateData = { ...rest };
     if (title || name) updateData.title = title || name;
@@ -144,6 +158,22 @@ exports.update = async (req, res, next) => {
       updateData.isPhishing = category === 'Phishing';
     }
     if (scenarioType) updateData.tags = [scenarioType];
+
+    // ── Visibility Controller: derive scheduledAt on update ──
+    if (schedule !== undefined) {
+      const scheduledAt = schedule ? new Date(schedule) : null;
+      updateData.schedule = scheduledAt;
+      updateData.scheduledAt = scheduledAt;
+
+      if (scheduledAt) {
+        const now = new Date();
+        if (scheduledAt > now && !['Paused', 'Completed'].includes(updateData.status)) {
+          updateData.status = 'Scheduled';
+        } else if (scheduledAt <= now && ['Pending', 'Scheduled'].includes(updateData.status)) {
+          updateData.status = 'Active';
+        }
+      }
+    }
 
     const simulation = await Simulation.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
@@ -200,7 +230,7 @@ exports.togglePause = async (req, res, next) => {
 exports.setStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
-    const allowed = ['Pending', 'Active', 'Paused', 'Completed'];
+    const allowed = ['Pending', 'Active', 'Paused', 'Completed', 'Scheduled'];
     if (!allowed.includes(status)) {
       return res
         .status(400)

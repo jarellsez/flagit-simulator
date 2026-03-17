@@ -78,9 +78,13 @@ const simulationSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    scheduledAt: {
+      type: Date,
+      default: null,
+    },
     status: {
       type: String,
-      enum: ['Pending', 'Active', 'Paused', 'Completed'],
+      enum: ['Pending', 'Active', 'Paused', 'Completed', 'Scheduled'],
       default: 'Pending',
     },
     progress: {
@@ -112,6 +116,23 @@ simulationSchema.pre('validate', function (next) {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
   }
+
+  // ── Visibility Controller: auto-set status based on scheduledAt ──
+  if (this.scheduledAt) {
+    const now = new Date();
+    if (this.scheduledAt > now) {
+      // Future date → Scheduled (unless manually paused or completed)
+      if (!['Paused', 'Completed'].includes(this.status)) {
+        this.status = 'Scheduled';
+      }
+    } else {
+      // Past or now → Active (only if still in a non-live state)
+      if (['Pending', 'Scheduled'].includes(this.status)) {
+        this.status = 'Active';
+      }
+    }
+  }
+
   next();
 });
 

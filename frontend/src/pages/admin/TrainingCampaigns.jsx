@@ -35,7 +35,8 @@ const StatusBadge = ({ status }) => {
   const map = {
     Active:    { bg: '#064e3b', color: '#34d399', dot: '#34d399' },
     Pending:   { bg: '#1e3a5f', color: '#60a5fa', dot: '#60a5fa' },
-    Paused:    { bg: '#78350f', color: '#fbbf24', dot: '#fbbf24' },
+    Paused:    { bg: '#374151', color: '#9ca3af', dot: '#9ca3af' },
+    Scheduled: { bg: '#78350f', color: '#fbbf24', dot: '#fbbf24' },
     Completed: { bg: '#334155', color: '#94a3b8', dot: '#94a3b8' },
   };
   const s = map[status] || map.Completed;
@@ -205,10 +206,18 @@ const TrainingSimulations = () => {
 
   const handleTogglePause = async (sim) => {
     setActionMenuId(null);
-    const newStatus = sim.status === 'Active' ? 'Paused' : 'Active';
+    let newStatus;
+    if (sim.status === 'Paused') {
+      // Resume: check if scheduledAt is still in the future
+      const scheduledAt = sim.scheduledAt ? new Date(sim.scheduledAt) : null;
+      newStatus = (scheduledAt && scheduledAt > new Date()) ? 'Scheduled' : 'Active';
+    } else {
+      // Pause from Active or Scheduled
+      newStatus = 'Paused';
+    }
     try {
       await patchSimulationStatus(sim.id || sim._id, newStatus);
-      showToast(`Simulation ${newStatus === 'Paused' ? 'paused' : 'resumed'}.`, 'info');
+      showToast(`Simulation ${newStatus === 'Paused' ? 'paused' : newStatus === 'Scheduled' ? 'resumed (scheduled)' : 'resumed'}.`, 'info');
     } catch (err) {
       showToast(`Status change failed: ${err.message}`, 'error');
     }
@@ -323,8 +332,18 @@ const TrainingSimulations = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'white', margin: 0 }}>Active Management</h2>
               <div style={{ padding: '0.3rem 0.8rem', background: '#F97316', borderRadius: '2rem', color: 'white', fontSize: '0.875rem', fontWeight: 700 }}>
-                {adminActiveSimulations.length} Running
+                {adminActiveSimulations.filter(s => s.status === 'Active').length} Running
               </div>
+              {adminActiveSimulations.filter(s => s.status === 'Scheduled').length > 0 && (
+                <div style={{ padding: '0.3rem 0.8rem', background: '#78350f', borderRadius: '2rem', color: '#fbbf24', fontSize: '0.875rem', fontWeight: 700 }}>
+                  {adminActiveSimulations.filter(s => s.status === 'Scheduled').length} Scheduled
+                </div>
+              )}
+              {adminActiveSimulations.filter(s => s.status === 'Paused').length > 0 && (
+                <div style={{ padding: '0.3rem 0.8rem', background: '#374151', borderRadius: '2rem', color: '#9ca3af', fontSize: '0.875rem', fontWeight: 700 }}>
+                  {adminActiveSimulations.filter(s => s.status === 'Paused').length} Paused
+                </div>
+              )}
             </div>
 
             <div style={{
@@ -356,7 +375,14 @@ const TrainingSimulations = () => {
                         <CategoryTag category={s.category} />
                       </td>
                       <td style={{ ...tdStyle, color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', fontWeight: 500 }}>{s.targetGroup}</td>
-                      <td style={{ ...tdStyle, color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>{fmtDate(s.schedule)}</td>
+                      <td style={{ ...tdStyle, color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>
+                        {fmtDate(s.scheduledAt || s.schedule)}
+                        {s.status === 'Scheduled' && s.scheduledAt && (
+                          <div style={{ fontSize: '0.65rem', color: '#fbbf24', marginTop: '0.2rem', fontWeight: 600 }}>
+                            Goes live {new Date(s.scheduledAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        )}
+                      </td>
                       <td style={tdStyle}><StatusBadge status={s.status} /></td>
                       <td style={tdStyle}><ProgressBar value={s.progress} /></td>
                       <td style={{ ...tdStyle, textAlign: 'right', position: 'relative' }}>
@@ -381,9 +407,9 @@ const TrainingSimulations = () => {
                             <button onClick={() => handleEdit(s)} style={menuBtnStyle} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
                               <FontAwesomeIcon icon={faEdit} style={{ color: '#F97316', width: 16 }} /> Edit Properties
                             </button>
-                            {(s.status === 'Active' || s.status === 'Paused') && (
+                            {(s.status === 'Active' || s.status === 'Paused' || s.status === 'Scheduled') && (
                               <button onClick={() => handleTogglePause(s)} style={menuBtnStyle} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
-                                <FontAwesomeIcon icon={s.status === 'Active' ? faPause : faPlay} style={{ color: '#fbbf24', width: 16 }} /> {s.status === 'Active' ? 'Pause Stream' : 'Resume Stream'}
+                                <FontAwesomeIcon icon={s.status === 'Active' || s.status === 'Scheduled' ? faPause : faPlay} style={{ color: '#fbbf24', width: 16 }} /> {s.status === 'Paused' ? 'Resume Stream' : 'Pause Stream'}
                               </button>
                             )}
                             {(s.status === 'Active' || s.status === 'Paused') && (

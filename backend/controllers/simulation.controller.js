@@ -2,18 +2,29 @@ const Simulation = require('../models/Simulation');
 const SimulationResult = require('../models/SimulationResult');
 const User = require('../models/User');
 
-// @desc    Get all simulations
+// @desc    Get all simulations (user-facing, visibility-filtered)
 // @route   GET /api/simulations
 exports.getAll = async (req, res, next) => {
   try {
-    const simulations = await Simulation.find().select('-emailContent').sort({ createdAt: -1 });
+    const now = new Date();
+    // ── Visibility Controller: only return active, non-future simulations ──
+    const simulations = await Simulation.find({
+      status: 'Active',
+      $or: [
+        { scheduledAt: null },
+        { scheduledAt: { $exists: false } },
+        { scheduledAt: { $lte: now } },
+      ],
+    })
+      .select('-emailContent')
+      .sort({ createdAt: -1 });
     res.json({ success: true, data: simulations });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get simulation detail by slug (with email content)
+// @desc    Get simulation detail by slug (with email content, visibility-filtered)
 // @route   GET /api/simulations/slug/:slug
 exports.getBySlug = async (req, res, next) => {
   try {
@@ -21,13 +32,29 @@ exports.getBySlug = async (req, res, next) => {
     if (!simulation) {
       return res.status(404).json({ success: false, message: 'Simulation not found' });
     }
+
+    // ── Visibility Controller ──
+    const now = new Date();
+    const isVisible =
+      simulation.status === 'Active' &&
+      (!simulation.scheduledAt || simulation.scheduledAt <= now);
+
+    if (!isVisible) {
+      return res.status(404).json({
+        success: false,
+        message: simulation.status === 'Scheduled'
+          ? 'This simulation is not yet available. It is scheduled for a future date.'
+          : 'Simulation not currently available.',
+      });
+    }
+
     res.json({ success: true, data: simulation });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get simulation detail (with email content)
+// @desc    Get simulation detail (with email content, visibility-filtered)
 // @route   GET /api/simulations/:id
 exports.getById = async (req, res, next) => {
   try {
@@ -35,6 +62,22 @@ exports.getById = async (req, res, next) => {
     if (!simulation) {
       return res.status(404).json({ success: false, message: 'Simulation not found' });
     }
+
+    // ── Visibility Controller ──
+    const now = new Date();
+    const isVisible =
+      simulation.status === 'Active' &&
+      (!simulation.scheduledAt || simulation.scheduledAt <= now);
+
+    if (!isVisible) {
+      return res.status(404).json({
+        success: false,
+        message: simulation.status === 'Scheduled'
+          ? 'This simulation is not yet available. It is scheduled for a future date.'
+          : 'Simulation not currently available.',
+      });
+    }
+
     res.json({ success: true, data: simulation });
   } catch (error) {
     next(error);

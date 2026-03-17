@@ -274,18 +274,42 @@ const SimulationModal = ({ isOpen, onClose, onSave, simulation }) => {
                         </div>
                     </div>
 
-                    {/* Status */}
+                    {/* Auto-computed Status Preview */}
                     <div style={{ marginBottom: '1.75rem' }}>
-                        <label style={labelStyle}>Initial Status</label>
-                        <select
-                            style={inputStyle}
-                            value={formData.status}
-                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                        >
-                            <option>Pending</option>
-                            <option>Active</option>
-                            <option>Paused</option>
-                        </select>
+                        <label style={labelStyle}>Computed Status</label>
+                        {(() => {
+                            const schedDate = formData.schedule && formData.scheduleTime
+                                ? new Date(`${formData.schedule}T${formData.scheduleTime}`)
+                                : formData.schedule ? new Date(formData.schedule) : null;
+                            const isFuture = schedDate && schedDate > new Date();
+                            const statusLabel = isFuture ? 'Scheduled' : 'Active';
+                            const statusColor = isFuture ? '#fbbf24' : '#34d399';
+                            const statusBg = isFuture ? '#78350f' : '#064e3b';
+                            return (
+                                <div style={{
+                                    display: 'flex', alignItems: 'center', gap: '0.75rem',
+                                    padding: '0.7rem 1rem', borderRadius: '0.6rem',
+                                    backgroundColor: '#f8fafc', border: '1.5px solid #e2e8f0',
+                                }}>
+                                    <span style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                                        backgroundColor: statusBg, color: statusColor,
+                                        padding: '0.25rem 0.7rem', borderRadius: '1rem',
+                                        fontSize: '0.72rem', fontWeight: 700,
+                                    }}>
+                                        <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: statusColor, display: 'inline-block' }} />
+                                        {statusLabel}
+                                    </span>
+                                    <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                                        {schedDate
+                                            ? isFuture
+                                                ? `Will auto-activate on ${schedDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })} at ${schedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`
+                                                : 'Will be immediately active upon creation'
+                                            : 'Select a schedule date above'}
+                                    </span>
+                                </div>
+                            );
+                        })()}
                     </div>
 
                     {/* Buttons */}
